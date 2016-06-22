@@ -1,0 +1,6 @@
+build*/
+*.user
+/test/Makefile
+/example/Makefile
+qtcreator/
+scripts/

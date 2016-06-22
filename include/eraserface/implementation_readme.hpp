@@ -48,14 +48,18 @@ struct interface_x_detail {
         using type_erased_ptr = result_type (*)(void *);
       };
 
-      //this specialization is used for member functions.
+      // this specialization is used for member functions.
       template <typename U>
       struct member_info<U, member_type, true> {
         using ptr_type = member_type U::*;
         using result_type = ::eraserface::ct::return_type_t<ptr_type>;
         using function_type = ::eraserface::ct::function_type_t<ptr_type>;
         using is_const = typename ::eraserface::ct::is_const_member<ptr_type>::type;
-        using type_erased_ptr = ::eraserface::ct::replace_args_t<0, function_type, void *> *;
+
+        // overwriting the U reference with void* and forwarding all parameters
+        using type_erased_ptr = ::eraserface::ct::replace_args_t<0,
+            typename ::eraserface::forward_all<function_type>::type,
+            void*> *;
       };
 
       using info = member_info<T>;
@@ -94,7 +98,10 @@ struct interface_x_detail {
         using result_type = ::eraserface::ct::return_type_t<ptr_type>;
         using function_type = ::eraserface::ct::function_type_t<ptr_type>;
         using is_const = typename ::eraserface::ct::is_const_member<ptr_type>::type;
-        using type_erased_ptr = ::eraserface::ct::replace_args_t<0, function_type, void *> *;
+
+        using type_erased_ptr = ::eraserface::ct::replace_args_t<0,
+            typename ::eraserface::forward_all<function_type>::type,
+            void*> *;
       };
 
       using info = member_info<T>;
@@ -176,7 +183,11 @@ struct interface_x_detail {
 
       // member name comes from the macro parameters
       inline decltype(auto) print_member_data( ::eraserface::forward_t<Args>... args) {
-        return ptr_vtable->func0( ::eraserface::get_ptr(obj_ptr), args...);
+        // perfect forwarding without templates
+        return ptr_vtable->func0(
+          ::eraserface::get_ptr(obj_ptr),
+          ::eraserface::forward_t<Args>&&>(args)...
+        );
       }
     };
 
@@ -190,7 +201,11 @@ struct interface_x_detail {
 
       // member name comes from the macro parameters
       inline decltype(auto) print_member_data( ::eraserface::forward_t<Args>... args) const {
-        return ptr_vtable->func0( ::eraserface::get_ptr(obj_ptr), args...);
+        // perfect forwarding without templates
+        return ptr_vtable->func0(
+          ::eraserface::get_ptr(obj_ptr),
+          ::eraserface::forward_t<Args>&&>(args)...
+        );
       }
     };
   };
@@ -227,7 +242,10 @@ struct interface_x_detail {
       using Base::obj_ptr;
 
       inline decltype(auto) member_data(::eraserface::forward_t<Args>... args) {
-        return ptr_vtable->func1(::eraserface::get_ptr(obj_ptr), args...);
+        return ptr_vtable->func1(
+          ::eraserface::get_ptr(obj_ptr),
+          ::eraserface::forward_t<Args>&&>(args)...
+        );
       }
     };
 
@@ -239,7 +257,10 @@ struct interface_x_detail {
       using Base::obj_ptr;
 
       inline decltype(auto) member_data(::eraserface::forward_t<Args>... args) const {
-        return ptr_vtable->func1(::eraserface::get_ptr(obj_ptr), args...);
+        return ptr_vtable->func1(
+          ::eraserface::get_ptr(obj_ptr),
+          ::eraserface::forward_t<Args>&&>(args)...
+        );
       }
     };
   };

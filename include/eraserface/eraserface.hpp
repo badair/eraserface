@@ -11,6 +11,7 @@
 #include <callable_traits/return_type.hpp>
 #include <callable_traits/expand_args.hpp>
 #include <callable_traits/replace_args.hpp>
+#include <callable_traits/apply_return.hpp>
 #include <callable_traits/function_type.hpp>
 #include <callable_traits/pop_front_args.hpp>
 #include <callable_traits/push_front_args.hpp>
@@ -28,6 +29,9 @@
 #include <boost/preprocessor/repetition/repeat.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 
+
+#include <tuple>
+#include <memory>
 #include <utility>
 #include <type_traits>
 
@@ -44,9 +48,24 @@ namespace eraserface {
 
     // used to forward a parameter without copying it
     template<typename T>
-    using forward_t = std::conditional_t< sizeof(void*) < sizeof(T)
-        , std::add_lvalue_reference_t< std::add_const_t<T> >, T>;
+    using forward_t = std::conditional_t<
+        std::is_reference<T>::value, T, T const &>;
+    
+    template<typename T>
+    struct forward_all;
 
+    template<typename... Args>
+    struct forward_all_helper {
+        using type = std::tuple<forward_t<Args>...>;
+    };
+    
+    template<typename F>
+    struct forward_all {
+        using return_type = ct::return_type_t<F>;
+        using forwarded_args = typename ct::expand_args_t<F, forward_all_helper>::type;
+        using type = ct::apply_return_t<forwarded_args, return_type>;
+    };
+    
     template<typename T>
     struct remove_member_pointer { using type = T; };
 
@@ -85,9 +104,10 @@ namespace eraserface {
         template<typename... Args>
         struct member_wrapper {
 
-            static inline decltype(auto)
-                wrap(void* c, ::eraserface::forward_t<Args>... args) {
-                return (reinterpret_cast<context*>(c)->*PmfValue)(args...);
+            static inline decltype(auto) wrap(void* c, ::eraserface::forward_t<Args>... args) {
+                //hand-rolled perfect forwarding
+                return (reinterpret_cast<context*>(c)->*PmfValue)
+                    (static_cast< ::eraserface::forward_t<Args>&&>(args)...);
             };
         };
 
@@ -305,8 +325,9 @@ struct BOOST_PP_CAT(member_info, i) {                                  \
         using is_const =                                               \
             typename ::eraserface::ct::is_const_member<ptr_type>::type;\
                                                                        \
-        using type_erased_ptr = ::eraserface::ct::replace_args_t<      \
-            0, function_type, void*> *;                                \
+        using type_erased_ptr = ::eraserface::ct::replace_args_t<0,    \
+            typename ::eraserface::forward_all<function_type>::type,   \
+            void*> *;                                                  \
     };                                                                 \
                                                                        \
     using info = member_info<T>;                                       \
@@ -373,8 +394,9 @@ struct base<i, SemanticsTag> {                                         \
                                                                        \
         inline decltype(auto)                                          \
         mem( ::eraserface::forward_t<Args>... args) qualifiers {       \
-            return ptr_vtable->BOOST_PP_CAT(func, i)                   \
-                ( ::eraserface::get_ptr(obj_ptr), args...);            \
+            return ptr_vtable->BOOST_PP_CAT(func, i)(                  \
+              ::eraserface::get_ptr(obj_ptr),                          \
+              static_cast< ::eraserface::forward_t<Args>&&>(args)...); \
         }                                                              \
     };                                                                 \
 /**/
