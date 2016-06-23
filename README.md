@@ -42,7 +42,7 @@ The `DEFINE_ERASERFACE` macro generates a type-erased interface type which can b
 This macro will generate an interface that *roughly* corresponds to the following abstract base class:
 
 ```cpp
-    struct interface_x {
+    struct my_interface {
         virtual void a_func(int) const = 0;
         virtual int another_func() = 0;
 
@@ -54,19 +54,19 @@ This macro will generate an interface that *roughly* corresponds to the followin
 The difference is that an Eraserface interface is applied "inline", instead of at a class definition :
 
 ```cpp
-    interface_x<eraserface::ref> i = some_object;
+    my_interface<eraserface::ref> i = some_object;
 ```
 
 With Eraserface interfaces, `eraserface::ref` is used to signify that the underlying object is not "owned", and that the underlying object must not be destroyed while the interface is still in use. For convenience, the `eraserface::ref` is the default template argument, so that this line of code is equivalent to the one above:
 
 ```cpp
-    interface_x<> i = some_object;
+    my_interface<> i = some_object;
 ```
 
 For a reference-counted interface object, `eraserface::shared` may be used. An `interface_x<eraserface::shared>` object may be constructed with a `std::shared_ptr` to the desired interface object. To construct a shared interface object directly, you may use the `make_shared` static function:
 
 ```cpp
-    auto shared_i = interface_x<>::make_shared<some_class>( /*forwarded constructor arguments*/ );
+    auto shared_i = my_interface<>::make_shared<some_class>( /*forwarded constructor arguments*/ );
 ```
 
 `shared_i` here is an object of type `interface_x<eraserface::shared>`. A reference interface object (`interface_x<>`) can be assigned an lvalue of a shared interface object, but the reference interface object will not share the `std::shared_ptr`.
@@ -82,6 +82,8 @@ Eraserface requires access to member function pointers through the target object
 * Publicly inherited member functions cannot be used to implement an Eraserface interface, unless they are imported with `using` declarations in the derived class.
 * objects of classes in the `std` namespace may not be used, since taking the address of a member function of a class in this namespace is undefined behavior.
 * If interface members are implemented with a member function template, Eraserface will instantiate the template and [ODR-use](http://en.cppreference.com/w/cpp/language/definition%23One_Definition_Rule#ODR-use) the member function according to the respective signature(s) passed to the `DEFINE_ERASERFACE` macro.
+
+The Eraserface macro adds two names to the current scope. The first macro parameter (e.g. `my_interface` in the previous example) is expanded to a class template. The first macro parameter is also appended with `_detail`, which is a class in the current scope (e.g. `my_interface_detail` in the previous example).
 
 # Dependencies
 
