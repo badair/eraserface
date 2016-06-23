@@ -35,7 +35,7 @@ This macro will generate an interface that *roughly* corresponds to the followin
 
     struct interface_x {
         virtual void a_func(int) const = 0;
-        virtual void another_func(int) = 0;
+        virtual int another_func() = 0;
         int some_data;
     };
 
