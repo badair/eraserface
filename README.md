@@ -85,6 +85,8 @@ Eraserface requires access to member function pointers through the target object
 
 The Eraserface macro adds two names to the current scope. The first macro parameter (e.g. `my_interface` in the previous example) is expanded to a class template. The first macro parameter is also appended with `_detail`, which is a class in the current scope (e.g. `my_interface_detail` in the previous example).
 
+The code in the `/include/eraserface/eraserface.hpp` header is difficult to follow and understand. To address this, annotated code from a `DEFINE_ERASERFACE` macro expansion is provided in `/include/eraserface/implementation_readme.hpp`.
+
 # Dependencies
 
 Dependencies must be available in the include path.
