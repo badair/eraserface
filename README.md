@@ -2,7 +2,7 @@
 
 ###Type-**erase**d polymorphic inte**rface**s
 
-*note: this project is a fleshing-out of the [Boost.FunctionTypes](http://www.boost.org/doc/libs/1_61_0/libs/function_types/example/interface.hpp) interface example, by Tobias Schwinger.*
+*note: this project is a fleshing-out of the [Boost.FunctionTypes interface example](http://www.boost.org/doc/libs/1_61_0/libs/function_types/example/interface.hpp) by Tobias Schwinger.*
 
 An interface is a collection of member function prototypes that may be implemented by classes. Objects of classes that implement the interface can then be assigned to an interface variable through which the interface's functions can be called.
 
