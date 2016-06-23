@@ -1,6 +1,6 @@
 # Eraserface
 
-Type-*erase*d polymorphic inte*rface*s
+###Type-**erase**d polymorphic inte**rface**s
 
 *note: this project is a fleshing-out of the [Boost.FunctionTypes](http://www.boost.org/doc/libs/1_61_0/libs/function_types/example/interface.hpp) interface example, by Tobias Schwinger.*
 
