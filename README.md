@@ -2,7 +2,7 @@
 
 Type-*erase*d polymorphic inte*rface*s
 
-*note: this project is a fleshing-out of the [@http://www.boost.org/doc/libs/1_61_0/libs/function_types/example/interface.hpp Boost.FunctionTypes interface example.*
+*note: this project is a fleshing-out of the [Boost.FunctionTypes](http://www.boost.org/doc/libs/1_61_0/libs/function_types/example/interface.hpp) interface example, by Tobias Schwinger.*
 
 An interface is a collection of member function prototypes that may be implemented by classes. Objects of classes that implement the interface can then be assigned to an interface variable through which the interface's functions can be called.
 
@@ -19,7 +19,7 @@ Interfaces are a prominent feature in many object-oriented programming languages
     * Adding an interface requires all clients to be rebuilt
 * Inheritance-based interfaces are a source of [tighter coupling](https://en.wikipedia.org/wiki/Coupling_%28computer_programming%29) - an interface needed for one small section of code must be inherited by a class that might be used in many unrelated sections of code
 
-Fortunately, it is possible to eliminate or mitigate all of these drawbacks by using an alternative approach based on type erasure. Eraserface is an implementation of this approach using template metaprogramming and preprocessor metaprogramming techniques.
+Fortunately, it is possible to eliminate or mitigate all of these drawbacks by using an alternative approach based on [type erasure](http://stackoverflow.com/questions/5450159/type-erasure-techniques). Eraserface is an implementation of this approach using template metaprogramming and preprocessor metaprogramming techniques.
 
 # Usage
 
@@ -31,7 +31,7 @@ The `DEFINE_ERASERFACE` macro generates a type-erased interface type which can b
       (( some_data, int ))
     );
 
-This macro will generate an interface that roughly corresponds to an abstract base class such as this:
+This macro will generate an interface that *roughly* corresponds to the following abstract base class:
 
     struct interface_x {
         virtual void a_func(int) const = 0;
