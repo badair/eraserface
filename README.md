@@ -77,9 +77,10 @@ For a reference-counted interface object, `eraserface::shared` may be used. An `
 
 First and foremost, Eraserface is a fun metaprogramming exercise. A handful of test cases exist in this repository, which one should review (and perhaps expand) before deciding to use Eraserface in their own project.
 
-Eraserface requires access to member function pointers through the target object type. This brings 3 important considerations:
+Eraserface requires access to member function pointers through the target object type. This brings 4 important considerations:
 
 * Publicly inherited member functions cannot be used to implement an Eraserface interface, unless they are imported with `using` declarations in the derived class.
+* Neither covariance no contravariance are supported.
 * objects of classes in the `std` namespace may not be used, since taking the address of a member function of a class in this namespace is undefined behavior.
 * If interface members are implemented with a member function template, Eraserface will instantiate the template and [ODR-use](http://en.cppreference.com/w/cpp/language/definition%23One_Definition_Rule#ODR-use) the member function according to the respective signature(s) passed to the `DEFINE_ERASERFACE` macro.
 
