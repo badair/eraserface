@@ -79,5 +79,5 @@ See the `/example` folder for more usage information.
 # [License](LICENSE.md)
 Distributed under the [Boost Software License, Version 1.0](http://boost.org/LICENSE_1_0.txt).
 
-(C) Copyright Tobias Schwinger
-(C) Copyright 2016 Barrett Adair
+* (C) Copyright Tobias Schwinger
+* (C) Copyright 2016 Barrett Adair
