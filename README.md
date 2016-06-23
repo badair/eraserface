@@ -23,33 +23,49 @@ Fortunately, it is possible to eliminate or mitigate all of these drawbacks by u
 
 # Usage
 
+Eraserface is contained to a single header file:
+
+```cpp
+    #include <eraserface/eraserface.hpp>
+```
+
 The `DEFINE_ERASERFACE` macro generates a type-erased interface type which can be used to apply an interface to an object, without altering class definitions. This allows objects to be interfaced polymorphically whose class definitions are not accessible to the programmer. In addition, the presence of implementations are checked and enforced at compile time, so there is no safety disadvantage to using this technique. Eraserface even accounts for member data, such as `some_data` below:
 
+```cpp
     DEFINE_ERASERFACE( my_interface,
       (( a_func, void(int) const ))
       (( another_func, int() ))
       (( some_data, int ))
     );
+```
 
 This macro will generate an interface that *roughly* corresponds to the following abstract base class:
 
+```cpp
     struct interface_x {
         virtual void a_func(int) const = 0;
         virtual int another_func() = 0;
         int some_data;
     };
+```
 
 The difference is that an Eraserface interface is applied "inline", instead of at a class definition :
 
+```cpp
     interface_x<eraserface::ref> i = some_object;
+```
 
 With Eraserface interfaces, `eraserface::ref` is used to signify that the underlying object is not "owned", and that the underlying object must not be destroyed while the interface is still in use. For convenience, the `eraserface::ref` is the default template argument, so that this line of code is equivalent to the one above:
 
+```cpp
     interface_x<> i = some_object;
+```
 
 For a reference-counted interface object, `eraserface::shared` may be used. An `interface_x<eraserface::shared>` object may be constructed with a `std::shared_ptr` to the desired interface object. To construct a shared interface object directly, you may use the `make_shared` static function:
 
+```cpp
     auto shared_i = interface_x<>::make_shared<some_class>( /*forwarded constructor arguments*/ );
+```
 
 `shared_i` here is an object of type `interface_x<eraserface::shared>`. A reference interface object (`interface_x<>`) can be assigned an lvalue of a shared interface object, but the reference interface object will not share the `std::shared_ptr`.
 
