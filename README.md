@@ -73,6 +73,8 @@ See the `/example` folder for more usage information.
 
 # Dependencies
 
+Dependencies must be available in the include path.
+
 * [CallableTraits](https://github.com/badair/callable_traits)
 * [Boost.PreProcessor](http://www.boost.org/doc/libs/1_61_0/libs/preprocessor/doc/index.html)
 
