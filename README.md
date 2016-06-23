@@ -2,7 +2,7 @@
 
 ###Type-**erase**d polymorphic inte**rface**s
 
-*note: this project is a fleshing-out of the [Boost.FunctionTypes interface example](http://www.boost.org/doc/libs/1_61_0/libs/function_types/example/interface.hpp) by Tobias Schwinger.*
+*note: this project is a fleshing-out of the [Boost.FunctionTypes interface example](http://www.boost.org/doc/libs/1_61_0/libs/function_types/example/interface.hpp) by Tobias Schwinger. This code began as a documentation example for the [CallableTraits](https://github.com/badair/callable_traits) project.*
 
 An interface is a collection of member function prototypes that may be implemented by classes. Objects of classes that implement the interface can then be assigned to an interface variable through which the interface's functions can be called.
 
@@ -69,7 +69,7 @@ For a reference-counted interface object, `eraserface::shared` may be used. An `
 
 `shared_i` here is an object of type `interface_x<eraserface::shared>`. A reference interface object (`interface_x<>`) can be assigned an lvalue of a shared interface object, but the reference interface object will not share the `std::shared_ptr`.
 
-See the `/example` folder for more usage information.
+[Here's a live example](http://melpon.org/wandbox/permlink/iX1VaAtbr5uZcfAp) -- experiment with it!
 
 # Dependencies
 

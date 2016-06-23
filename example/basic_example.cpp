@@ -1,13 +1,10 @@
-/*<-
+/*
 (C) Copyright Tobias Schwinger
 (C) Copyright 2016 (Modified Work) Barrett Adair
 
 Use modification and distribution are subject to the boost Software License,
 Version 1.0. (See http://www.boost.org/LICENSE_1_0.txt).
-
------------------------------------------------------------------------------
-See interface.hpp in this directory for details.
-->*/
+*/
 
 #include <iostream>
 #include <memory>
