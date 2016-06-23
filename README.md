@@ -73,12 +73,26 @@ For a reference-counted interface object, `eraserface::shared` may be used. An `
 
 [Here's a live example](http://melpon.org/wandbox/permlink/iX1VaAtbr5uZcfAp) - experiment with it!
 
+# Caveats
+
+First and foremost, Eraserface is a fun metaprogramming exercise. A handful of test cases exist in this repository, which one should review (and perhaps expand) before deciding to use Eraserface in their own project.
+
+Eraserface requires access to member function pointers through the target object type. This brings 3 important considerations:
+
+* Publicly inherited member functions cannot be used to implement an Eraserface interface, unless they are imported with `using` declarations in the derived class.
+* objects of classes in the `std` namespace may not be used, since taking the address of a member function of a class in this namespace is undefined behavior.
+* If interface members are implemented with a member function template, Eraserface will instantiate the template and [ODR-use](http://en.cppreference.com/w/cpp/language/definition%23One_Definition_Rule#ODR-use) the member function according to the respective signature(s) passed to the `DEFINE_ERASERFACE` macro.
+
 # Dependencies
 
 Dependencies must be available in the include path.
 
 * [CallableTraits](https://github.com/badair/callable_traits)
 * [Boost.PreProcessor](http://www.boost.org/doc/libs/1_61_0/libs/preprocessor/doc/index.html)
+
+# Compatibility
+
+Eraserface works on GCC 4.9.3+ and Clang 3.8+. MSVC is not supported, largely (if not entirely) due to name-lookup compiler bugs.
 
 # [License](LICENSE.md)
 Distributed under the [Boost Software License, Version 1.0](http://boost.org/LICENSE_1_0.txt).
