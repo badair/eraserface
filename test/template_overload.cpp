@@ -38,7 +38,7 @@ int main() {
     foo my_foo;
     bar my_bar;
 
-    test_interface<> ti = my_foo;
+    test_interface ti = my_foo;
     assert(ti.f() == 1);
     assert(ti.f(0) == 2);
 
