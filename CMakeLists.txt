@@ -39,6 +39,7 @@ eraserface_append_flag(eraserface_HAS_WWRITE_STRINGS             -Wwrite-strings
 
 if(NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     eraserface_append_flag(eraserface_HAS_FGNU_TM                    -fgnu-tm)
+    #eraserface_append_flag(eraserface_HAS_FGNU_TM                    -fmax-errors=1)
 endif()
 
 if(MSVC AND NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")

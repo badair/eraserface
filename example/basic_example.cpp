@@ -63,7 +63,7 @@ struct another_class {
 // Both classes above can be assigned to the interface variable and their
 // member functions can be called through it.
 
-void print_data(my_interface<> obj) {
+void print_data(my_interface obj) {
     std::cout << obj.some_data() << std::endl;
 }
 
@@ -71,10 +71,7 @@ int main() {
     a_class x;
     another_class y{ 43 };
 
-    // The default interface type, my_interface<>, keeps a reference to
-    // the implementation object. my_interface<eraserface::shared>
-    // takes a std::shared_ptr to enable managed memory.
-    my_interface<> i = x;
+    my_interface i = x;
 
     i.a_func(12);
     i.a_func(77L);
@@ -90,14 +87,4 @@ int main() {
     i.a_func(21L);
     i.another_func();
     print_data(y);
-
-    // Creating a reference-counted interface object. In this case,
-    // decltype(shared) is my_interface<eraserface::shared>.
-    auto shared = my_interface<>::make_shared<another_class>(42);
-    i = shared;
-    i.a_func(435);
-    i.a_func(123);
-    i.another_func();
-    i.some_data() = "hellooo";
-    print_data(i);
 }

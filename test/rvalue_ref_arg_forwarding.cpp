@@ -43,7 +43,7 @@ int main() {
     bar my_bar;
     copy_counter counter;
 
-    test_interface<> ti = my_foo;
+    test_interface ti = my_foo;
 
     assert(ti.f(copy_counter{}) == 1);
     assert(copy_counter::copy_count == 0);
