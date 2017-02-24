@@ -2,7 +2,7 @@
 
 ###Type-**erase**d polymorphic inte**rface**s
 
-*Note: This project is a fleshing-out of the [Boost.FunctionTypes interface example](http://www.boost.org/doc/libs/1_61_0/libs/function_types/example/interface.hpp) by Tobias Schwinger. This code began as a documentation example for the [CallableTraits](https://github.com/badair/callable_traits) project.*
+*Note: This project is a fleshing-out of the [Boost.FunctionTypes interface example](http://www.boost.org/doc/libs/1_61_0/libs/function_types/example/interface.hpp) by Tobias Schwinger. This code began as a documentation example for the [CallableTraits](https://github.com/badair/callable_traits) project, a proposed Boost Library.*
 
 An interface is a collection of member function prototypes that may be implemented by classes. Objects of classes that implement the interface can then be assigned to an interface variable through which the interface's functions can be called.
 
@@ -19,7 +19,7 @@ Interfaces are a prominent feature in many object-oriented programming languages
     * Adding an interface requires all clients to be rebuilt
 * Inheritance-based interfaces are a source of [tighter coupling](https://en.wikipedia.org/wiki/Coupling_%28computer_programming%29) - an interface needed for one small section of code must be inherited by a class that might be used in many unrelated sections of code
 
-Fortunately, it is possible to eliminate or mitigate all of these drawbacks by using an alternative approach based on [type erasure](http://stackoverflow.com/questions/5450159/type-erasure-techniques). Eraserface is an implementation of this approach using template metaprogramming and preprocessor metaprogramming techniques.
+Fortunately, it is possible to mitigate all of these drawbacks by using an alternative approach based on [type erasure](http://stackoverflow.com/questions/5450159/type-erasure-techniques). Eraserface is an implementation of this approach using template metaprogramming and preprocessor metaprogramming techniques.
 
 # Usage
 
@@ -54,24 +54,8 @@ This macro will generate an interface that *roughly* corresponds to the followin
 The difference is that an Eraserface interface is applied "inline", instead of at a class definition :
 
 ```cpp
-    my_interface<eraserface::ref> i = some_object;
+    my_interface i = some_object;
 ```
-
-With Eraserface interfaces, `eraserface::ref` is used to signify that the underlying object is not "owned", and that the underlying object must not be destroyed while the interface is still in use. For convenience, the `eraserface::ref` is the default template argument, so that this line of code is equivalent to the one above:
-
-```cpp
-    my_interface<> i = some_object;
-```
-
-For a reference-counted interface object, `eraserface::shared` may be used. An `interface_x<eraserface::shared>` object may be constructed with a `std::shared_ptr` to the desired interface object. To construct a shared interface object directly, you may use the `make_shared` static function:
-
-```cpp
-    auto shared_i = my_interface<>::make_shared<some_class>( /*forwarded constructor arguments*/ );
-```
-
-`shared_i` here is an object of type `interface_x<eraserface::shared>`. A reference interface object (`interface_x<>`) can be assigned an lvalue of a shared interface object, but the reference interface object will not share the `std::shared_ptr`.
-
-[Here's a live example](http://melpon.org/wandbox/permlink/iX1VaAtbr5uZcfAp) - experiment with it!
 
 # Caveats
 
@@ -84,7 +68,7 @@ Eraserface requires access to member function pointers through the target object
 * objects of classes in the `std` namespace may not be used, since taking the address of a member function of a class in this namespace is undefined behavior.
 * If interface members are implemented with a member function template, Eraserface will instantiate the template and [ODR-use](http://en.cppreference.com/w/cpp/language/definition%23One_Definition_Rule#ODR-use) the member function according to the respective signature(s) passed to the `DEFINE_ERASERFACE` macro.
 
-The Eraserface macro adds two names to the current scope. The first macro parameter (e.g. `my_interface` in the previous example) is expanded to a class template. The first macro parameter is also appended with `_detail`, which is a class in the current scope (e.g. `my_interface_detail` in the previous example).
+The Eraserface macro adds two names to the current scope. The first macro parameter (e.g. `my_interface` in the previous example) is expanded to a struct. The first macro parameter is also appended with `_detail_`, which is a class in the current scope (e.g. `my_interface_detail_` in the previous example).
 
 The code in the `/include/eraserface/eraserface.hpp` header is difficult to follow and understand. To address this, annotated code from a `DEFINE_ERASERFACE` macro expansion is provided in `/include/eraserface/implementation_readme.hpp`.
 
@@ -97,7 +81,7 @@ Dependencies must be available in the include path.
 
 # Compatibility
 
-Eraserface works on GCC 4.9.3+ and Clang 3.8+. MSVC is not supported, largely (if not entirely) due to name-lookup compiler bugs.
+Eraserface worked at some point on GCC 4.9.3+ and Clang 3.8+, and maybe it still does. I need to set up continous integration tests. MSVC is not supported, largely (if not entirely) due to name-lookup compiler bugs.
 
 # [License](LICENSE.md)
 Distributed under the [Boost Software License, Version 1.0](http://boost.org/LICENSE_1_0.txt).
