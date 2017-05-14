@@ -7,19 +7,14 @@
 #ifndef ERASERFACE_HPP
 #define ERASERFACE_HPP
 
-#include <boost/callable_traits/arg_at.hpp>
 #include <boost/callable_traits/return_type.hpp>
-#include <boost/callable_traits/expand_args.hpp>
-#include <boost/callable_traits/replace_args.hpp>
+#include <boost/callable_traits/args.hpp>
 #include <boost/callable_traits/apply_return.hpp>
 #include <boost/callable_traits/function_type.hpp>
-#include <boost/callable_traits/pop_front_args.hpp>
-#include <boost/callable_traits/push_front_args.hpp>
 #include <boost/callable_traits/is_const_member.hpp>
 #include <boost/callable_traits/remove_member_cv.hpp>
-#include <boost/callable_traits/expand_args_right.hpp>
 #include <boost/callable_traits/remove_member_reference.hpp>
-#include <boost/callable_traits/qualified_parent_class_of.hpp>
+#include <boost/callable_traits/qualified_class_of.hpp>
 
 #include <boost/preprocessor/seq/seq.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
@@ -57,7 +52,7 @@ namespace eraserface {
         using impl = std::tuple<forward_t<Args>...>;
 
         using type = ct::apply_return_t<
-            ct::expand_args_t<F, impl>, ct::return_type_t<F>>;
+            ct::args_t<F, impl>, ct::return_type_t<F>>;
     };
     
     template<typename T>
@@ -65,6 +60,22 @@ namespace eraserface {
 
     template<typename T, typename C>
     struct remove_member_pointer<T C::*> { using type = T; };
+
+    template<typename T>
+    struct erase_first_arg;
+
+    template<typename Ret, typename First, typename... Args>
+    struct erase_first_arg<Ret(First, Args...)> {
+        using type = Ret(void*, Args...);
+    };
+
+    template<typename T>
+    struct pop_front_arg;
+
+    template<typename Ret, typename First, typename... Args>
+    struct pop_front_arg<Ret(First, Args...)> {
+        using type = Ret(Args...);
+    };
 
     // The member struct erases the object reference type that is supplied by
     // function_type, which aliases an INVOKE-aware function type when
@@ -84,10 +95,10 @@ namespace eraserface {
     template<typename Pmf, Pmf PmfValue>
     struct member<Pmf, PmfValue, true> {
 
-        // qualified_parent_class_of yields a reference type which is qualified
+        // qualified_class_of yields a reference type which is qualified
         // according to the member function type.
         using context =
-            std::remove_reference_t<ct::qualified_parent_class_of_t<Pmf>>;
+            std::remove_reference_t<ct::qualified_class_of_t<Pmf>>;
 
         template<typename... Args>
         struct member_wrapper {
@@ -100,13 +111,13 @@ namespace eraserface {
             };
         };
 
-        // removing the member pointer so that expand_args below doesn't include
+        // removing the member pointer so that args below doesn't include
         // the INVOKE-required object argument
         using abominable_function_type =
             typename ::eraserface::remove_member_pointer<Pmf>::type;
 
-        // expand_args is used to expand the argument types into member_wrapper
-        using wrapper = ::eraserface::ct::expand_args_t<
+        // args is used to expand the argument types into member_wrapper
+        using wrapper = ::eraserface::ct::args_t<
             abominable_function_type, member_wrapper>;
     };
 
@@ -247,9 +258,9 @@ struct BOOST_PP_CAT(member_info, i) {                                  \
         using is_const =                                               \
             typename ::eraserface::ct::is_const_member<ptr_type>::type;\
                                                                        \
-        using type_erased_ptr = ::eraserface::ct::replace_args_t<0,    \
-            typename ::eraserface::forward_all<function_type>::type,   \
-            void*> *;                                                  \
+        using type_erased_ptr = typename ::eraserface::erase_first_arg<\
+            typename ::eraserface::forward_all<function_type>::type    \
+            >::type *;                                                 \
     };                                                                 \
                                                                        \
     using info = member_info<T>;                                       \
@@ -292,8 +303,8 @@ struct base<i, ForcePartialSpecializationDummyType> {                  \
     using function_type = ::eraserface::ct::function_type_t<           \
         typename vtable::BOOST_PP_CAT(pmf, i)>;                        \
                                                                        \
-    using impl = ::eraserface::ct::expand_args_right_t<                \
-        ::eraserface::ct::pop_front_args_t<function_type>,             \
+    using impl = ::eraserface::ct::args_t<                             \
+        typename ::eraserface::pop_front_arg<function_type>::type,     \
         BOOST_PP_CAT(choose_member_constness, i)>;                     \
                                                                        \
     using is_const =                                                   \
